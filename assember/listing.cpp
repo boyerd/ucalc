@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iomanip>
+#include <iterator>
 
 #include "symbol.h"
 #include "label.h"
@@ -16,9 +17,40 @@ listing::listing(void) {
 }
 
 listing::~listing(void) {
+    for (std::vector<instruction*>::iterator it = opstbl->begin(); it != opstbl->end(); ++it) {
+        delete (*it);
+    }
+
+    for (std::vector<symbol*>::iterator it = symtbl->begin(); it != symtbl->end(); ++it) {
+        delete (*it);
+    }
+
+    for (std::vector<label*>::iterator it = lbltbl->begin(); it != lbltbl->end(); ++it) {
+        delete (*it);
+    }
+
     delete opstbl;
     delete symtbl;
     delete lbltbl;
+}
+
+int listing::addsymbol(std::string input) {
+
+    int index = -1;
+    for (std::vector<symbol*>::iterator it = symtbl->begin(); it != symtbl->end(); ++it) {
+        if ((*it)->name == input) {
+            std::cout << "Symbol " << input << " found at ";
+            std::cout << it - symtbl->begin() << std::endl;
+//            return it - symtbl->begin();
+            return std::distance(symtbl->begin(), it);
+        }
+    }
+    std::cout << "Symbol not found, inserted at position ";
+    index = std::distance(symtbl->begin(),
+        symtbl->insert(symtbl->end(),new symbol(input)));
+    std::cout << index << std::endl;
+    return index;
+
 }
 
 int listing::factory(std::string input) {
@@ -46,9 +78,11 @@ int listing::factory(std::string input) {
     // detected a symbol definition
     if (ins[0] == '$') {
         std::cout << "Found symbol '" << ins << "' with value '" << arg << "'\n";
-        symtbl->insert(symtbl->end(),new symbol(ins));
+        addsymbol(ins);
         return 0;
     }
+    std::cout << input << std::endl;
+    std::cout << argify(input) << std::endl;
 
     // must be an instruction?  parse as such
     if (ins == "nop") {
@@ -58,8 +92,8 @@ int listing::factory(std::string input) {
     } else if (ins == "jz") {
         opstbl->insert(opstbl->end(),new jz(input)); 
     } else if (ins == "add") {
-        symtbl->insert(symtbl->end(),new symbol(arg));
-        opstbl->insert(opstbl->end(),new add(input, 0)); 
+        opstbl->insert(opstbl->end(),new add(input, 
+                addsymbol(arg)));
     } else if (ins == "addi") {
         opstbl->insert(opstbl->end(),new addi(input)); 
     } else if (ins == "ldli") {

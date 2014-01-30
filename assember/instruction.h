@@ -2,7 +2,7 @@
 #define INSTRUCTION_H
 
 #include <stdlib.h>
-
+#include <iostream>
 const int SHIFT = 24;
 
 std::string argify(const std::string&);
@@ -20,6 +20,7 @@ class immediate : public instruction {
         int value;
         immediate(std::string input) : instruction(input) {
             value = strtol(argify(input).c_str(),NULL,0);
+            std::cout << argify(input).c_str() << " " << value << std::endl;
         };
         virtual int ins() = 0;
 };

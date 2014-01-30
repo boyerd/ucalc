@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 #include "util.h"
 
@@ -24,10 +25,12 @@ std::string cmd(const std::string& s) {
 }
 
 std::string argify(const std::string& s) {
-    std::string rval;
+    std::string rval = "";
     size_t p = s.find_first_of(" \t\n");
+    if (p == std::string::npos)
+        return rval;
     rval = s.substr(p);
-    trim(rval);
+    rval = trim(rval);
     //remove trailing space as well
     p = rval.find_first_of(" \t\n");
     rval = rval.substr(0,p);

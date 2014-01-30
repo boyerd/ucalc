@@ -14,6 +14,7 @@ class listing {
         listing(void);
         ~listing(void);
         int factory(std::string);
+        int addsymbol(std::string);
         void print(void);
 };
 
