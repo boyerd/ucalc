@@ -4,6 +4,12 @@
 class symbol {
     public:
         std::string name;
+        symbol(void) {
+            name = "";
+        }
+        symbol(std::string input) {
+            name = input;
+        }
 };
 
 #endif //SYMBOL_H
