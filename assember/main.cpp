@@ -4,21 +4,10 @@
 #include <fstream>
 #include <iomanip>
 
-#define VERBOSE 1
-#define DEBUG 1
-
 #include "symboltable.h"
+#include "labeltable.h"
 #include "instruction.h"
-
-int process(std::string line) {
-
-    if (line == "nop") {
-        return 0;
-    } else {
-        std::cout << "ERROR\n";
-        return 0;
-    }
-}
+#include "program.h"
 
 void print_usage(std::string pname) {
     std::cout << "Usage: " << pname << " [input file]\n";
