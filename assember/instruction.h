@@ -3,10 +3,6 @@
 
 #include <stdlib.h>
 
-class symboltable;
-
-extern symboltable symtbl;
-
 const int SHIFT = 24;
 
 std::string argify(const std::string&);
@@ -31,8 +27,8 @@ class immediate : public instruction {
 class direct : public instruction {
     public:
         int symidx;
-        direct(std::string input) : instruction(input) {
-            symidx = symtbl.add_symbol(argify(input));
+        direct(std::string input, int idx) : instruction(input) {
+            symidx = idx;
         };
         virtual int ins() = 0;
 };
@@ -64,7 +60,7 @@ class jz: public instruction {
 
 class add: public direct {
     public:
-        add(std::string input) : direct(input) {}
+        add(std::string input, int idx) : direct(input,idx) {}
         int ins(void) {
             return (3 << SHIFT) + symidx;
         }
@@ -100,7 +96,7 @@ class ldhi : public immediate {
 
 class ref : public direct {
     public:
-        ref(std::string input) : direct(input) {}
+        ref(std::string input,int idx) : direct(input,idx) {}
         int ins(void) {
             return 0;
         }
