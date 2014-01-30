@@ -1,0 +1,18 @@
+nop
+    nop
+clr
+nop asdf
+$temp 1
+start:
+add $cntr
+add $test
+ldhi 132
+ldli 132
+add $test
+    end:  This is the end of the code section
+add $temp
+add $gone
+add $yo
+add $test
+addi 0x50
+add $cntr
