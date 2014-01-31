@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iomanip>
 
+#include "symbol.h"
+#include "label.h"
 #include "instruction.h"
 #include "listing.h"
 

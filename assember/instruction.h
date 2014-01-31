@@ -2,8 +2,10 @@
 #define INSTRUCTION_H
 
 #include <stdlib.h>
-#include <iostream>
+
 const int SHIFT = 24;
+class label;
+class symbol;
 
 std::string argify(const std::string&);
 
@@ -18,9 +20,9 @@ class instruction {
 class immediate : public instruction {
     public:
         int value;
-        immediate(std::string input) : instruction(input) {
-            value = strtol(argify(input).c_str(),NULL,0);
-            std::cout << argify(input).c_str() << " " << value << std::endl;
+        immediate(std::string input, int val) : instruction(input) {
+            //value = strtol(argify(input).c_str(),NULL,0);
+            value = val;
         };
         virtual int ins() = 0;
 };
@@ -43,11 +45,14 @@ class nop: public instruction {
         }
 };
 
-class clr: public instruction {
+class jump : public instruction {
     public:
-        clr(std::string input) : instruction(input) {}
+        label* lbl;
+        jump(std::string input, label* targ) : instruction(input) {
+            lbl = targ;
+        }
         int ins(void) {
-            return (1 << SHIFT);
+            return (1 << SHIFT) + lbl->op_id;
         }
 };
 
@@ -69,7 +74,7 @@ class add: public direct {
     
 class addi: public immediate {
     public:
-        addi(std::string input) : immediate(input) {}
+        addi(std::string input, int val) : immediate(input,val) {}
         int ins(void) {
             return (4 << SHIFT) + value;
         }
@@ -77,7 +82,7 @@ class addi: public immediate {
 
 class ldli : public immediate {
     public:
-        ldli(std::string input) : immediate(input) {
+        ldli(std::string input, int val) : immediate(input,val) {
             value = (value & 0x0000FFFF);
         }
         int ins(void) {
@@ -87,23 +92,47 @@ class ldli : public immediate {
 
 class ldhi : public immediate {
     public:
-        ldhi(std::string input) : immediate(input) {
-            value = (value & 0x0000FFFF);
+        ldhi(std::string input, int val) : immediate(input,val) {
+            value = ((value >> 16) & 0x0000FFFF);
         }
         int ins(void) {
             return (6 << SHIFT) + value;
         }
 };
 
-class ref : public direct {
+class st : public direct {
     public:
-        ref(std::string input,int idx) : direct(input,idx) {}
+        st(std::string input,int idx) : direct(input,idx) {}
         int ins(void) {
-            return 0;
+            return (7 << SHIFT) + symidx;
         }
 };
 
-int instruction_factory(std::string, std::vector<instruction*>&);
-int instruction_optimize(std::vector<instruction*>&);
+class ld : public direct {
+    public:
+        ld(std::string input,int idx) : direct(input,idx) {}
+        int ins(void) {
+            return (8 << SHIFT) + symidx;
+        }
+};
+
+class sub: public direct {
+    public:
+        sub(std::string input, int idx) : direct(input,idx) {}
+        int ins(void) {
+            return (9 << SHIFT) + symidx;
+        }
+};
+    
+class subi: public immediate {
+    public:
+        subi(std::string input, int val) : immediate(input,val) {}
+        int ins(void) {
+            return (10 << SHIFT) + value;
+        }
+};
+
+//int instruction_factory(std::string, std::vector<instruction*>&);
+//int instruction_optimize(std::vector<instruction*>&);
 
 #endif //INSTRUCTION_H

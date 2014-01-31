@@ -7,5 +7,7 @@ std::string cmd(const std::string&);
 
 std::string arg(const std::string&);
 
+std::string rmcomment(const std::string&);
+
 #endif //UTIL_H
 

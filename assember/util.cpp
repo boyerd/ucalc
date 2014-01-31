@@ -36,3 +36,13 @@ std::string argify(const std::string& s) {
     rval = rval.substr(0,p);
     return rval;
 }
+
+std::string rmcomment(const std::string& s) {
+    std::string rval = s;
+    size_t p = s.find_first_of("#");
+    if (p == std::string::npos)
+        return rval;
+    rval = s.substr(0,p);
+    return rval;
+}
+

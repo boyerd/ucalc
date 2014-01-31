@@ -1,0 +1,15 @@
+nop
+clr
+$value 0
+$cntr 5
+loop:   #this is a proper comment
+ld $value
+addi 0x25
+st $value
+ld $cntr
+subi 1  this is a freeform comment
+st $cntr
+jz
+jump loop:
+end:
+jump end:
