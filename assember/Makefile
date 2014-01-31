@@ -1,11 +1,12 @@
-
+BIN=assembler
+SRC=main.cpp listing.cpp util.cpp
 .PHONY: clean
 
-all: assembler
+all: $(BIN)
 
 
-assembler: main.cpp listing.cpp util.cpp
-	g++ -Wall -I ../include/ main.cpp listing.cpp util.cpp -o assembler
+$(BIN): $(SRC)	 
+	g++ -Wall -I ../include/ $(SRC) -o $(BIN)
 
 clean:
-	-rm -fr assembler
+	-rm -fr $(BIN) 
