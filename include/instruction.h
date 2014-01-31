@@ -16,7 +16,11 @@ class instruction {
         std::string mnemonic;
         instruction(std::string input): mnemonic(input) {}
         virtual int ins() = 0;
-        virtual void run(system_state* sys, int data) {sys->pc += 1;};
+        virtual void run(system_state* sys) {
+            sys->pc += 1;
+            std::cout << "Default run called :(" << std::endl;
+        };
+
 };
 
 class immediate : public instruction {
@@ -45,7 +49,7 @@ class nop: public instruction {
         int ins(void) {
             return (0 << SHIFT);
         }
-        void run(system_state* sys, int data) {sys->pc += 1;};
+        void run(system_state* sys) {sys->pc += 1;};
 };
 
 class jump : public instruction {
@@ -57,7 +61,7 @@ class jump : public instruction {
         int ins(void) {
             return (1 << SHIFT) + lbl->op_id;
         }
-        void run(system_state* sys, int data) {sys->pc = (int)data;};
+        void run(system_state* sys) {sys->pc = (long)lbl;};
 };
 
 class jz: public instruction {
@@ -66,7 +70,7 @@ class jz: public instruction {
         int ins(void) {
             return (2 << SHIFT);
         }
-        void run(system_state* sys, int data) {
+        void run(system_state* sys) {
             if (sys->a == 0)
                 sys->pc += 2;
             else
@@ -80,8 +84,8 @@ class add: public direct {
         int ins(void) {
             return (3 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->a += sys->rd_data(data);
+        void run(system_state* sys) {
+            sys->a += sys->rd_data(symidx);
             sys->pc += 1;
         };
 };
@@ -92,8 +96,8 @@ class addi: public immediate {
         int ins(void) {
             return (4 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a += data;
+        void run(system_state* sys) {
+            sys->a += value;
             sys->pc += 1;
         };
 };
@@ -106,8 +110,8 @@ class ldli : public immediate {
         int ins(void) {
             return (5 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a = (sys->a & 0xFFFF0000) | (data & 0x0000FFFF);
+        void run(system_state* sys) {
+            sys->a = (sys->a & 0xFFFF0000) | (value & 0x0000FFFF);
             sys->pc += 1;
         };
             
@@ -121,8 +125,8 @@ class ldhi : public immediate {
         int ins(void) {
             return (6 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a = ((data << 16) & 0xFFFF0000) | (sys->a & 0x0000FFFF);
+        void run(system_state* sys) {
+            sys->a = ((value << 16) & 0xFFFF0000) | (sys->a & 0x0000FFFF);
             sys->pc += 1;
         };
 };
@@ -133,8 +137,8 @@ class st : public direct {
         int ins(void) {
             return (7 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->wr_data(data,sys->a);
+        void run(system_state* sys) {
+            sys->wr_data(symidx,sys->a);
             sys->pc += 1;
         };
 };
@@ -145,8 +149,8 @@ class ld : public direct {
         int ins(void) {
             return (8 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->a = sys->rd_data(data);
+        void run(system_state* sys) {
+            sys->a = sys->rd_data(symidx);
             sys->pc += 1;
         };
 };
@@ -157,8 +161,8 @@ class sub: public direct {
         int ins(void) {
             return (9 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->a -= sys->rd_data(data);
+        void run(system_state* sys) {
+            sys->a -= sys->rd_data(symidx);
             sys->pc += 1;
         };
 };
@@ -169,8 +173,8 @@ class subi: public immediate {
         int ins(void) {
             return (10 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a -= data;
+        void run(system_state* sys) {
+            sys->a -= value;
             sys->pc += 1;
         };
 };
@@ -181,8 +185,8 @@ class logor: public direct {
         int ins(void) {
             return (11 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->a |= sys->rd_data(data);
+        void run(system_state* sys) {
+            sys->a |= sys->rd_data(symidx);
             sys->pc += 1;
         };
 };
@@ -193,8 +197,8 @@ class logori: public immediate {
         int ins(void) {
             return (12 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a |= data;
+        void run(system_state* sys) {
+            sys->a |= value;
             sys->pc += 1;
         };
 };
@@ -205,8 +209,8 @@ class logxor: public direct {
         int ins(void) {
             return (13 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->a ^= sys->rd_data(data);
+        void run(system_state* sys) {
+            sys->a ^= sys->rd_data(symidx);
             sys->pc += 1;
         };
 };
@@ -217,8 +221,8 @@ class logxori: public immediate {
         int ins(void) {
             return (14 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a ^= data;
+        void run(system_state* sys) {
+            sys->a ^= value;
             sys->pc += 1;
         };
 };
@@ -229,8 +233,8 @@ class logand: public direct {
         int ins(void) {
             return (15 << SHIFT) + symidx;
         }
-        void run(system_state* sys, int data) {
-            sys->a &= sys->rd_data(data);
+        void run(system_state* sys) {
+            sys->a &= sys->rd_data(symidx);
             sys->pc += 1;
         };
 };
@@ -241,8 +245,8 @@ class logandi: public immediate {
         int ins(void) {
             return (16 << SHIFT) + value;
         }
-        void run(system_state* sys, int data) {
-            sys->a &= data;
+        void run(system_state* sys) {
+            sys->a &= value;
             sys->pc += 1;
         };
 };
@@ -253,10 +257,19 @@ class lognot: public instruction {
         int ins(void) {
             return (17 << SHIFT);
         }
-        void run(system_state* sys, int data) {
+        void run(system_state* sys) {
             sys->a = ~sys->a;
             sys->pc += 1;
         };
+};
+
+class fin: public instruction {
+    public:
+        fin(std::string input) : instruction(input) {}
+        int ins(void) {
+            return (18 << SHIFT);
+        }
+        void run(system_state* sys) {}
 };
 
 #endif //INSTRUCTION_H

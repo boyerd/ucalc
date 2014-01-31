@@ -211,6 +211,9 @@ int listing::factory(std::string input) {
     } else if (ins == "not") {
         opstbl->insert(opstbl->end(),new lognot(input)); 
 
+    } else if (ins == "fin") {
+        opstbl->insert(opstbl->end(),new fin(input)); 
+
     } else {
         return -1;
     }

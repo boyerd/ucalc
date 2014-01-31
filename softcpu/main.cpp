@@ -16,7 +16,7 @@ void print_usage(std::string pname) {
 instruction* instruction_factory(std::string buffer) {
     int code = (strtol(buffer.c_str(),NULL,0) >> SHIFT) & 0x0000FFFF;
     int data = (strtol(buffer.c_str(),NULL,0)) & 0x0000FFFF;
-    std::cout << "Factory is creating a (" << code << "," << data << ") object.\n";
+
     switch(code) {
         case 0:
             return new(std::nothrow) nop(buffer);
@@ -72,6 +72,9 @@ instruction* instruction_factory(std::string buffer) {
         case 17:
             return new(std::nothrow) lognot(buffer);
             break;
+        case 18:
+            return new(std::nothrow) fin(buffer);
+            break;
         default:
             return new(std::nothrow) nop(buffer);
             break;
@@ -99,6 +102,7 @@ int main(int argc, char *argv[]) {
     // declare our system state
     system_state* proc;
     proc = new(std::nothrow) system_state;
+    std::vector<std::string> rom;
 
     if(!proc) {
         std::cout << "Error allocating system state.\n";
@@ -111,18 +115,35 @@ int main(int argc, char *argv[]) {
     std::string buffer;
     int data = 0;
     instruction* op;
+    fin halt("fin");
 
+    // load the instruction list into the rom
     while(std::getline(input,buffer)) {
-        
-        op = instruction_factory(buffer);
+        std::cout << "Loading instruction " << buffer << std::endl;
+        rom.push_back(buffer);
+    }
+    std::cout << "Initial values:\n";
+    std::cout << " pc: " << proc->pc << "\t\ta: " << proc->a << std::endl;
+    std::cout << rom[rom.end() - rom.begin() - 1] << std::endl;
+    std::cout << "versus\n";
+    std::cout << halt.ins() << std::endl;
+
+    while(strtol(rom[proc->pc].c_str(),NULL,0) != 0x12000000) {
+         
+        if (proc->pc >= (int)rom.size()) {
+            std::cout << "PC points beyond instruction space! Exiting...\n";
+            return -1;
+        }
+        op = instruction_factory(rom[proc->pc]);
         if (!op) {
             std::cout << "Error reading line " << cntr << ".  Instruction not recognized.\n";
             std::cout << "Line " << cntr << ": " << buffer << std::endl;
             return -1;
         }
         data = strtol(buffer.c_str(),NULL,0) & 0x0000FFFF;
-        op->run(proc,data);
+        op->run(proc);
         delete op;
+        std::cout << " pc: " << proc->pc << "\t\ta: " << proc->a << std::endl;
 
     }
 
