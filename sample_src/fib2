@@ -1,0 +1,16 @@
+$cntr   10
+$prev   0
+$cur    1
+loop:
+ld      $prev
+st      $temp
+ld      $cur
+st      $prev
+add     $temp
+st      $cur
+ld      $cntr
+subi    1
+st      $cntr
+jz
+jump    loop:
+fin
