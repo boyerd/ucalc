@@ -184,6 +184,33 @@ int listing::factory(std::string input) {
         opstbl->insert(opstbl->end(),new ld(input, 
                 addsymbol(arg)));
 
+    } else if (ins == "or") {
+        opstbl->insert(opstbl->end(),new logor(input, 
+                addsymbol(arg)));
+
+    } else if (ins == "ori") {
+        opstbl->insert(opstbl->end(),new logori(input,
+                    strtol(arg.c_str(),NULL,0)));
+
+    } else if (ins == "xor") {
+        opstbl->insert(opstbl->end(),new logxor(input, 
+                addsymbol(arg)));
+
+    } else if (ins == "xori") {
+        opstbl->insert(opstbl->end(),new logxori(input,
+                    strtol(arg.c_str(),NULL,0)));
+
+    } else if (ins == "and") {
+        opstbl->insert(opstbl->end(),new logand(input, 
+                addsymbol(arg)));
+
+    } else if (ins == "andi") {
+        opstbl->insert(opstbl->end(),new logandi(input,
+                    strtol(arg.c_str(),NULL,0)));
+
+    } else if (ins == "not") {
+        opstbl->insert(opstbl->end(),new lognot(input)); 
+
     } else {
         return -1;
     }

@@ -49,7 +49,28 @@ instruction* instruction_factory(std::string buffer) {
             return new(std::nothrow) sub(buffer,data);
             break;
         case 10:
-            return new(std::nothrow) sub(buffer,data);
+            return new(std::nothrow) subi(buffer,data);
+            break;
+        case 11:
+            return new(std::nothrow) logor(buffer,data);
+            break;
+        case 12:
+            return new(std::nothrow) logori(buffer,data);
+            break;
+        case 13:
+            return new(std::nothrow) logxor(buffer,data);
+            break;
+        case 14:
+            return new(std::nothrow) logxori(buffer,data);
+            break;
+        case 15:
+            return new(std::nothrow) logand(buffer,data);
+            break;
+        case 16:
+            return new(std::nothrow) logandi(buffer,data);
+            break;
+        case 17:
+            return new(std::nothrow) lognot(buffer);
             break;
         default:
             return new(std::nothrow) nop(buffer);

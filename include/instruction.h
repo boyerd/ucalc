@@ -175,7 +175,88 @@ class subi: public immediate {
         };
 };
 
-//int instruction_factory(std::string, std::vector<instruction*>&);
-//int instruction_optimize(std::vector<instruction*>&);
+class logor: public direct {
+    public:
+        logor(std::string input, int idx) : direct(input,idx) {}
+        int ins(void) {
+            return (11 << SHIFT) + symidx;
+        }
+        void run(system_state* sys, int data) {
+            sys->a |= sys->rd_data(data);
+            sys->pc += 1;
+        };
+};
+    
+class logori: public immediate {
+    public:
+        logori(std::string input, int val) : immediate(input,val) {}
+        int ins(void) {
+            return (12 << SHIFT) + value;
+        }
+        void run(system_state* sys, int data) {
+            sys->a |= data;
+            sys->pc += 1;
+        };
+};
+
+class logxor: public direct {
+    public:
+        logxor(std::string input, int idx) : direct(input,idx) {}
+        int ins(void) {
+            return (13 << SHIFT) + symidx;
+        }
+        void run(system_state* sys, int data) {
+            sys->a ^= sys->rd_data(data);
+            sys->pc += 1;
+        };
+};
+    
+class logxori: public immediate {
+    public:
+        logxori(std::string input, int val) : immediate(input,val) {}
+        int ins(void) {
+            return (14 << SHIFT) + value;
+        }
+        void run(system_state* sys, int data) {
+            sys->a ^= data;
+            sys->pc += 1;
+        };
+};
+
+class logand: public direct {
+    public:
+        logand(std::string input, int idx) : direct(input,idx) {}
+        int ins(void) {
+            return (15 << SHIFT) + symidx;
+        }
+        void run(system_state* sys, int data) {
+            sys->a &= sys->rd_data(data);
+            sys->pc += 1;
+        };
+};
+    
+class logandi: public immediate {
+    public:
+        logandi(std::string input, int val) : immediate(input,val) {}
+        int ins(void) {
+            return (16 << SHIFT) + value;
+        }
+        void run(system_state* sys, int data) {
+            sys->a &= data;
+            sys->pc += 1;
+        };
+};
+
+class lognot: public instruction {
+    public:
+        lognot(std::string input) : instruction(input) {}
+        int ins(void) {
+            return (17 << SHIFT);
+        }
+        void run(system_state* sys, int data) {
+            sys->a = ~sys->a;
+            sys->pc += 1;
+        };
+};
 
 #endif //INSTRUCTION_H
