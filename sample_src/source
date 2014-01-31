@@ -16,6 +16,7 @@ jz
 jump loop:
 nop
 ldi 0xdeadbeef
+st $word
 nop
 end:
 jump end:
