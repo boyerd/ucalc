@@ -14,7 +14,47 @@ void print_usage(std::string pname) {
 }
 
 instruction* instruction_factory(std::string buffer) {
-    return new(std::nothrow) nop(buffer);
+    int code = (strtol(buffer.c_str(),NULL,0) >> SHIFT) & 0x0000FFFF;
+    int data = (strtol(buffer.c_str(),NULL,0)) & 0x0000FFFF;
+    std::cout << "Factory is creating a (" << code << "," << data << ") object.\n";
+    switch(code) {
+        case 0:
+            return new(std::nothrow) nop(buffer);
+            break;
+        case 1:
+            return new(std::nothrow) jump(buffer,(label*)data);
+            break;
+        case 2:
+            return new(std::nothrow) jz(buffer);
+            break;
+        case 3:
+            return new(std::nothrow) add(buffer,data);
+            break;
+        case 4:
+            return new(std::nothrow) addi(buffer,data);
+            break;
+        case 5:
+            return new(std::nothrow) ldli(buffer,data);
+            break;
+        case 6:
+            return new(std::nothrow) ldhi(buffer,data);
+            break;
+        case 7:
+            return new(std::nothrow) st(buffer,data);
+            break;
+        case 8:
+            return new(std::nothrow) ld(buffer,data);
+            break;
+        case 9:
+            return new(std::nothrow) sub(buffer,data);
+            break;
+        case 10:
+            return new(std::nothrow) sub(buffer,data);
+            break;
+        default:
+            return new(std::nothrow) nop(buffer);
+            break;
+    }            
 }
 
 int main(int argc, char *argv[]) {
@@ -61,13 +101,17 @@ int main(int argc, char *argv[]) {
         }
         data = strtol(buffer.c_str(),NULL,0) & 0x0000FFFF;
         op->run(proc,data);
-        proc->pc += 1;
         delete op;
 
     }
 
     std::cout << "Final A: " << proc->a << std::endl;
     std::cout << "Final PC: " << proc->pc << std::endl;
+    std::cout << "Memory:\n" << std::endl;
+
+    for (int i = 0; i < proc->sz_data(); i++) {
+        std::cout << "0x" << std::hex << i << "\t0x" << proc->rd_data(i) << std::endl;
+    }
 
     return 0;
 }
