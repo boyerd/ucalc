@@ -16,7 +16,7 @@ class instruction {
         std::string mnemonic;
         instruction(std::string input): mnemonic(input) {}
         virtual int ins() = 0;
-        void run(system_state*) {};
+        void run(system_state*, int data) {};
 };
 
 class immediate : public instruction {
