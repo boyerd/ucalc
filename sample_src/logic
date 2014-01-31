@@ -1,0 +1,28 @@
+$test 0x55
+$and 0x50
+$xor 0xF0
+$or 0xF0
+clr
+ld $test
+and $and
+st $andr
+ld $test
+xor $xor
+st $xorr
+ld $test
+or $or
+st $orr
+ld $test
+not
+st $notr
+nop
+ld  $test
+andi 0x50
+st  $andi
+ld  $test
+xori 0xF0 
+st  $xori
+ld  $test
+ori 0xF0 
+st  $ori
+
