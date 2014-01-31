@@ -3,6 +3,7 @@
 #include <string>
 #include <iomanip>
 #include <iterator>
+#include <stdlib.h>
 
 #include "symbol.h"
 #include "label.h"

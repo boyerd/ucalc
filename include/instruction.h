@@ -1,11 +1,12 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-#include <stdlib.h>
+#include "system_state.h"
 
 const int SHIFT = 24;
 class label;
 class symbol;
+class system_state;
 
 std::string argify(const std::string&);
 
@@ -15,6 +16,7 @@ class instruction {
         std::string mnemonic;
         instruction(std::string input): mnemonic(input) {}
         virtual int ins() = 0;
+        void run(system_state*) {};
 };
 
 class immediate : public instruction {
