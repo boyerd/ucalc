@@ -5,6 +5,7 @@
 #include <iterator>
 #include <stdlib.h>
 
+#include "verb.h"
 #include "symbol.h"
 #include "label.h"
 #include "listing.h"
@@ -40,16 +41,16 @@ int listing::addsymbol(std::string input) {
     int index = -1;
     for (std::vector<symbol*>::iterator it = symtbl->begin(); it != symtbl->end(); ++it) {
         if ((*it)->name == input) {
-            std::cout << "\tSymbol " << input << " found at ";
-            std::cout << it - symtbl->begin() << std::endl;
+            log(DETAIL) << "\tSymbol " << input << " found at ";
+            log(DETAIL) << it - symtbl->begin() << std::endl;
 //            return it - symtbl->begin();
             return std::distance(symtbl->begin(), it);
         }
     }
-    std::cout << "\tSymbol not found, inserted at position ";
+    log(DETAIL) << "\tSymbol not found, inserted at position ";
     index = std::distance(symtbl->begin(),
         symtbl->insert(symtbl->end(),new symbol(input)));
-    std::cout << index << std::endl;
+    log(DETAIL) << index << std::endl;
     return index;
 
 }
@@ -61,13 +62,13 @@ label* listing::addlabel(std::string input, int op) {
     int index = -1;
     for (std::vector<label*>::iterator it = lbltbl->begin(); it != lbltbl->end(); ++it) {
         if ((*it)->name == input) {
-            std::cout << "\tLabel " << input << " found at ";
-            std::cout << it - lbltbl->begin() << " targeting "<< (*it)->op_id << std::endl;
+            log(DETAIL) << "\tLabel " << input << " found at ";
+            log(DETAIL) << it - lbltbl->begin() << " targeting "<< (*it)->op_id << std::endl;
             if ((*it)->op_id < op) {
-                std::cout << "\tRetargetting to " << op;
+                log(DETAIL) << "\tRetargetting to " << op;
                 if ((*it)->op_id != -1)
-                    std::cout << " (Note: duplicate label?)"; 
-                std::cout << std::endl;
+                    log(DETAIL) << " (Note: duplicate label?)"; 
+                log(DETAIL) << std::endl;
                 (*it)->op_id = op;
             }
 
@@ -75,11 +76,11 @@ label* listing::addlabel(std::string input, int op) {
             return *it;
         }
     }
-    std::cout << "\tLabel not found, inserted at position ";
+    log(DETAIL) << "\tLabel not found, inserted at position ";
     std::vector<label*>::iterator lbl;
     lbl = lbltbl->insert(lbltbl->end(),new label(input,op));
     index = std::distance(lbltbl->begin(),lbl);
-    std::cout << index << " targeting " << op << std::endl;
+    log(DETAIL) << index << " targeting " << op << std::endl;
     return *lbl;
 
 }
@@ -98,18 +99,18 @@ int listing::factory(std::string input) {
     ins = cmd(input);
     arg = trim(input.substr(ins.length()));
 
-    std::cout << "Instruction factory processing '" << input << "' ";
+    log(BASIC) << "Instruction factory processing '" << input << "' ";
 
 
     if (ins == "") {
-        std::cout << " ...failed to recognize an instruction...\n";
+        log(BASIC) << " ...failed to recognize an instruction...\n";
         return 0;
     }
 
 
     // detected a label
     if (ins.at(ins.length()-1) == ':') {
-        std::cout << "\n\tFound label '" << ins << "'\n";
+        log(BASIC) << "\n\tFound label '" << ins << "'\n";
         //lbltbl->insert(lbltbl->end(),new label(ins,opstbl->size()));
         addlabel(ins,opstbl->size());
         return 0;
@@ -117,7 +118,7 @@ int listing::factory(std::string input) {
 
     // detected a symbol definition
     if (ins[0] == '$') {
-        std::cout << "\n\tFound symbol '" << ins << "' with value '" << arg << "'\n";
+        log(BASIC) << "\n\tFound symbol '" << ins << "' with value '" << arg << "'\n";
         // fake the value setting with a pair of load instructions and a store
         opstbl->insert(opstbl->end(),new ldli(input,
                     strtol(arg.c_str(),NULL,0)));
@@ -129,8 +130,8 @@ int listing::factory(std::string input) {
     }
 
     // must be an instruction?  parse as such
-    std::cout << "Ins: '" << ins << "' Arg: '" << arg << "'";
-    std::cout << std::endl;
+    log(BASIC) << "Ins: '" << ins << "' Arg: '" << arg << "'";
+    log(BASIC) << std::endl;
 
     if (ins == "nop") {
         opstbl->insert(opstbl->end(),new nop(input)); 
@@ -223,20 +224,20 @@ int listing::factory(std::string input) {
 
 void listing::print(void) {
 
-    std::cout << "\nInstruction table:\n";
+    log(DETAIL) << "\nInstruction table:\n";
     for (std::vector<instruction*>::iterator it = opstbl->begin(); it != opstbl->end(); ++it) {
-        std::cout << it - opstbl->begin() << ":\t0x" << std::setfill('0') << std::setw(8) << std::hex << (*it)->ins();
-        std::cout << "\t\t(" <<  (*it)->mnemonic << ")\n";
+        log(DETAIL) << it - opstbl->begin() << ":\t0x" << std::setfill('0') << std::setw(8) << std::hex << (*it)->ins();
+        log(DETAIL) << "\t\t(" <<  (*it)->mnemonic << ")\n";
     }
 
-    std::cout << "\nSymbol table:\n";
+    log(DETAIL) << "\nSymbol table:\n";
     for (std::vector<symbol*>::iterator it = symtbl->begin(); it != symtbl->end(); ++it) {
-        std::cout << "0x" << it - symtbl->begin() << "\t\t" << (*it)->name << std::endl;
+        log(DETAIL) << "0x" << it - symtbl->begin() << "\t\t" << (*it)->name << std::endl;
     }
 
-    std::cout << "\nLabel table:\n";
+    log(DETAIL) << "\nLabel table:\n";
     for (std::vector<label*>::iterator it = lbltbl->begin(); it != lbltbl->end(); ++it) {
-        std::cout << (*it)->name << " 0x" << (*it)->op_id << " (" << opstbl->at((*it)->op_id)->mnemonic << ")" << std::endl; 
+        log(DETAIL) << (*it)->name << " 0x" << (*it)->op_id << " (" << opstbl->at((*it)->op_id)->mnemonic << ")" << std::endl; 
     }
 
 

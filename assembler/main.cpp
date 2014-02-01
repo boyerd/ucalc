@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iomanip>
 
+#include "verb.h"
 #include "symbol.h"
 #include "label.h"
 #include "instruction.h"
@@ -19,6 +20,8 @@ int main(int argc, char *argv[]) {
     std::ofstream output;
     int cntr = 0;
 
+    setloglevel(0);
+
     if (argc < 2) {
         print_usage(argv[0]);
         return -1;
@@ -28,7 +31,7 @@ int main(int argc, char *argv[]) {
     input.open(argv[1], std::ios::in);
 
     if (!input.is_open()) {
-        std::cout << "Error opening input source " << argv[1] << ".\n";
+        log(ERROR) << "Error opening input source " << argv[1] << ".\n";
         return -1;
     }
 
@@ -42,8 +45,8 @@ int main(int argc, char *argv[]) {
 
         ++cntr;
         if (program.factory(buffer) != 0) {
-            std::cout << "Error reading line " << cntr << ".  Instruction not recognized.\n";
-            std::cout << "Line " << cntr << ": " << buffer << std::endl;
+            log(ERROR) << "Error reading line " << cntr << ".  Instruction not recognized.\n";
+            log(ERROR) << "Line " << cntr << ": " << buffer << std::endl;
             return -1;
         }
 
